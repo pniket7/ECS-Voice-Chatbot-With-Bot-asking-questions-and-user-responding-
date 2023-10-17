@@ -34,7 +34,7 @@ def project_manager_interview():
 
 def developer_interview():
     questions = [
-        "Can you intoduce yourself?",
+        "Can you introduce yourself?",
         "What programming languages are you proficient in?",
         "Tell me about a complex coding problem you've solved",
         "How do you stay updated with the latest industry trends?",
@@ -44,7 +44,7 @@ def developer_interview():
 
 def hr_manager_interview():
     questions = [
-        "Can you intoduce yourself?",
+        "Can you introduce yourself?",
         "How do you handle employee conflicts?",
         "What HR tools or software are you familiar with?",
         "Can you explain the onboarding process you've implemented?",
@@ -62,13 +62,12 @@ def recorder(audio_bytes):
         user_response = recognizer.recognize_google(audio_data)
     
     return user_response
-    
+
 def main():
     # Add a button to start the interview
     if st.button("Start Interview"):
         session_state.conversation_started = True
         session_state.role_prompted = True
-        # Add a button to exit the interview
 
     if st.button("Exit Interview"):
         session_state.conversation_started = False  # Reset the conversation
@@ -93,7 +92,7 @@ def main():
             audio_bytes = audio_recorder(key="01")
 
             if audio_bytes:
-                user_response=recorder(audio_bytes)
+                user_response = recorder(audio_bytes)
                 # Select a job role based on the user's response
                 if "project manager" in user_response.lower():
                     session_state.role = "project_manager"
@@ -106,7 +105,6 @@ def main():
                     st.stop()
                 # Set the role_prompted flag to False
                 session_state.role_prompted = False
-
 
         # If a role has been selected, ask the user interview questions for that role
         if session_state.get("role"):
@@ -127,15 +125,24 @@ def main():
                 audio_bytes = audio_recorder(key=f"{question}")
                 while True:
                     if audio_bytes:
-                        user_response=recorder(audio_bytes)
-                        # Write the question and user's response to the screen in chat like format
+                        user_response = recorder(audio_bytes)
+                        # Write the question and user's response to the screen in a chat-like format
                         st.write(f"User: {user_response}")
                         st.audio(audio_bytes, format="audio/wav")
                         break
                     else:
                         st.write("Waiting for user response...")
-                        time.sleep(6)
+                        time.sleep(8)
 
+            # Create and save the "Thank you" message as an audio file
+            thank_you_message = "Your interview is complete. Thank you for answering the questions."
+            tts = gTTS(text=thank_you_message, lang='en')
+            tts.save("thank_you_message.mp3")
+
+            # Play the audio file for the "Thank you" message
+            audio_file = open("thank_you_message.mp3", "rb")
+            audio_bytes = audio_file.read()
+            st.audio(audio_bytes, format='audio/mp3')
 
 # Get the interview questions for the selected role
 def get_interview_questions(role):
